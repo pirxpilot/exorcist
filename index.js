@@ -62,7 +62,7 @@ function exorcist(input, url, root, base, errorOnMissing) {
       return write(src.source);
     }
 
-    if (isStream(input) && isStream.writable(stream)) {
+    if (isStream(input) && !isStream.writable(stream)) {
       return stream.emit('error', new Error('Must provide a writable stream'));
     }
 
