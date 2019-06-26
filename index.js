@@ -1,6 +1,5 @@
 const mold = require('mold-source-map');
 const path = require('path');
-const mkdirp = require('mkdirp');
 const isStream = require('is-stream');
 const fs = require('fs');
 
@@ -78,7 +77,7 @@ function exorcist(input, url, root, base, errorOnMissing) {
       return input.end(separated.json, 'utf8', done);
     }
 
-    mkdirp(path.dirname(input), function (err) {
+    fs.mkdir(path.dirname(input), { recursive: true }, function (err) {
       if (err) return done(err);
       fs.writeFile(input, separated.json, 'utf8', done);
     });
