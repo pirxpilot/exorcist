@@ -1,4 +1,4 @@
-const mold = require('mold-source-map');
+const mold = require('./lib/mold');
 const path = require('path');
 const isStream = require('is-stream');
 const fs = require('fs');
@@ -6,7 +6,7 @@ const fs = require('fs');
 function separate(src, url, root, base) {
   src.sourceRoot(root || src.sourcemap.getProperty('sourceRoot') || '');
   if (base) {
-    src.mapSources(mold.mapPathRelativeTo(base));
+    src.mapSources(file => path.relative(base, file));
   }
 
   const json = src.toJSON(2);
