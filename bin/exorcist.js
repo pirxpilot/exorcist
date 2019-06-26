@@ -16,12 +16,19 @@ function usage() {
 }
 
 (function damnYouEsprima() {
-  const argv = minimist(process.argv.slice(2)
-    , { boolean: [ 'h', 'help', 'e', 'error-on-missing' ]
-      , string: [ 'url', 'u', 'root', 'r', 'base', 'b' ]
-    });
+  const argv = minimist(process.argv.slice(2), {
+    boolean: [ 'h', 'e' ],
+    string: [ 'u', 'r', 'b' ],
+    alias: {
+      u: 'url',
+      b: 'base',
+      e: 'error-on-missing',
+      r: 'root',
+      h: 'help'
+    }
+  });
 
-  if (argv.h || argv.help) return usage();
+  if (argv.help) return usage();
 
 
   let mapfile = argv._.shift();
@@ -30,10 +37,12 @@ function usage() {
     return usage();
   }
 
-  const url            = argv.url            || argv.u;
-  const root           = argv.root           || argv.r;
-  const base           = argv.base           || argv.b;
-  const errorOnMissing = argv.errorOnMissing || argv.e || argv['error-on-missing'];
+  const {
+    url,
+    root,
+    base,
+    'error-on-missing': errorOnMissing
+  } = argv;
 
   mapfile = path.resolve(mapfile);
 

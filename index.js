@@ -11,16 +11,13 @@ function separate(src, url, root, base) {
 
   const json = src.toJSON(2);
 
-  let comment = '';
   const commentRx = /^\s*\/(\/|\*)[@#]\s+sourceMappingURL/mg;
   const commentMatch = commentRx.exec(src.source);
   const commentBlock = (commentMatch && commentMatch[1] === '*');
 
-  if (commentBlock) {
-    comment = `/*# sourceMappingURL=${url} */`;
-  } else {
-    comment = `//# sourceMappingURL=${url}`;
-  }
+  const comment = commentBlock
+    ? `/*# sourceMappingURL=${url} */`
+    : `//# sourceMappingURL=${url}`;
 
   return { json, comment };
 }
