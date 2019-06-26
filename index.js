@@ -1,10 +1,8 @@
-'use strict';
-
-var mold = require('mold-source-map')
-  , path = require('path')
-  , mkdirp = require('mkdirp')
-  , isStream = require('is-stream')
-  , fs = require('fs');
+const mold = require('mold-source-map');
+const path = require('path');
+const mkdirp = require('mkdirp');
+const isStream = require('is-stream');
+const fs = require('fs');
 
 function separate(src, url, root, base) {
   src.sourceRoot(root || src.sourcemap.getProperty('sourceRoot') || '');
@@ -12,20 +10,20 @@ function separate(src, url, root, base) {
     src.mapSources(mold.mapPathRelativeTo(base));
   }
 
-  var json = src.toJSON(2);
+  const json = src.toJSON(2);
 
-  var comment = '';
-  var commentRx = /^\s*\/(\/|\*)[@#]\s+sourceMappingURL/mg;
-  var commentMatch = commentRx.exec(src.source);
-  var commentBlock = (commentMatch && commentMatch[1] === '*');
+  let comment = '';
+  const commentRx = /^\s*\/(\/|\*)[@#]\s+sourceMappingURL/mg;
+  const commentMatch = commentRx.exec(src.source);
+  const commentBlock = (commentMatch && commentMatch[1] === '*');
 
   if (commentBlock) {
-    comment = '/*# sourceMappingURL=' + url + ' */';
+    comment = `/*# sourceMappingURL=${url} */`;
   } else {
-    comment = '//# sourceMappingURL=' + url;
+    comment = `//# sourceMappingURL=${url}`;
   }
 
-  return { json: json, comment: comment };
+  return { json, comment };
 }
 
 module.exports =
@@ -53,15 +51,14 @@ module.exports =
  */
 
 function exorcist(input, url, root, base, errorOnMissing) {
-  var missingMapMsg = "The code that you piped into exorcist contains no source map!";
+  const missingMapMsg = "The code that you piped into exorcist contains no source map!";
 
-  var stream = mold.transform(function(src, write) {
+  const stream = mold.transform(function(src, write) {
     if (!src.sourcemap) {
       if (errorOnMissing) return stream.emit('error', new Error(missingMapMsg));
       stream.emit(
         'missing-map'
-        ,   missingMapMsg + '\n'
-          + 'Therefore it was piped through as is and no external map file generated.'
+        ,   `${missingMapMsg}\nTherefore it was piped through as is and no external map file generated.`
       );
       return write(src.source);
     }
@@ -75,7 +72,7 @@ function exorcist(input, url, root, base, errorOnMissing) {
     }
 
     url = url || path.basename(input);
-    var separated = separate(src, url, root, base);
+    const separated = separate(src, url, root, base);
 
     if (isStream(input)) {
       return input.end(separated.json, 'utf8', done);
