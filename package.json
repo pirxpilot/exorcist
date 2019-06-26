@@ -45,5 +45,10 @@
   "license": "MIT",
   "engine": {
     "node": ">=0.6"
-  }
+  },
+  "files": [
+    "index.js",
+    "bin",
+    "lib"
+  ]
 }
