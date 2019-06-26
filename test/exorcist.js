@@ -1,18 +1,17 @@
-'use strict';
 /*jshint asi: true */
 
-var test     = require('tap').test
-var fs       = require('fs');
-var through  = require('through2');
-var proxyquire = require('proxyquire');
-var exorcist = require('../')
+const test     = require('tap').test;
+const fs       = require('fs');
+const through  = require('through2');
+const proxyquire = require('proxyquire');
+const exorcist = require('../');
 
-var fixtures = __dirname + '/fixtures';
-var scriptMapfile = fixtures + '/bundle.js.map';
-var styleMapfile = fixtures + '/to.css.map';
+const fixtures = `${__dirname}/fixtures`;
+const scriptMapfile = `${fixtures}/bundle.js.map`;
+const styleMapfile = `${fixtures}/to.css.map`;
 
 // This base path is baken into the source maps in the fixtures.
-var base = '/Users/thlorenz/dev/projects/exorcist';
+const base = '/Users/thlorenz/dev/projects/exorcist';
 
 function cleanup() {
   if (fs.existsSync(scriptMapfile)) fs.unlinkSync(scriptMapfile);
@@ -22,20 +21,20 @@ function cleanup() {
 
 test('\nwhen piping a bundle generated with browserify through exorcist without adjusting properties', function (t) {
   t.on('end', cleanup);
-  var data = ''
-  fs.createReadStream(fixtures + '/bundle.js')
+  let data = '';
+  fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(exorcist(scriptMapfile))
     .pipe(through(onread, onflush));
 
     function onread(d, _, cb) { data += d; cb(); }
 
     function onflush(cb) {
-      var lines = data.split('\n')
+      const lines = data.split('\n');
       lines.pop(); // Trailing newline
       t.equal(lines.length, 25, 'pipes entire bundle including prelude, sources and source map url')
       t.equal(lines.pop(), '//# sourceMappingURL=bundle.js.map', 'last line as source map url pointing to .js.map file')
 
-      var map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
+      const map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
       t.equal(map.file, 'generated.js', 'leaves file name unchanged')
       t.equal(map.sources.length, 4, 'maps 4 source files')
       t.equal(map.sources[0].indexOf(base), 0, 'uses absolute source paths')
@@ -50,20 +49,20 @@ test('\nwhen piping a bundle generated with browserify through exorcist without 
 
 test('\nwhen piping a bundle generated with browserify through exorcist and adjusting url', function (t) {
   t.on('end', cleanup);
-  var data = ''
-  fs.createReadStream(fixtures + '/bundle.js')
+  let data = '';
+  fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(exorcist(scriptMapfile, 'http://my.awseome.site/bundle.js.map'))
     .pipe(through(onread, onflush));
 
     function onread(d, _, cb) { data += d; cb(); }
 
     function onflush(cb) {
-      var lines = data.split('\n')
+      const lines = data.split('\n');
       lines.pop(); // Trailing newline
       t.equal(lines.length, 25, 'pipes entire bundle including prelude, sources and source map url')
       t.equal(lines.pop(), '//# sourceMappingURL=http://my.awseome.site/bundle.js.map', 'last line as source map url pointing to .js.map file at url set to supplied url')
 
-      var map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
+      const map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
       t.equal(map.file, 'generated.js', 'leaves file name unchanged')
       t.equal(map.sources.length, 4, 'maps 4 source files')
       t.equal(map.sourcesContent.length, 4, 'includes 4 source contents')
@@ -77,20 +76,20 @@ test('\nwhen piping a bundle generated with browserify through exorcist and adju
 
 test('\nwhen piping a bundle generated with browserify through exorcist and adjusting root and url', function (t) {
   t.on('end', cleanup);
-  var data = ''
-  fs.createReadStream(fixtures + '/bundle.js')
+  let data = '';
+  fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(exorcist(scriptMapfile, 'http://my.awseome.site/bundle.js.map', 'http://my.awesome.site/src'))
     .pipe(through(onread, onflush));
 
     function onread(d, _, cb) { data += d; cb(); }
 
     function onflush(cb) {
-      var lines = data.split('\n')
+      const lines = data.split('\n');
       lines.pop(); // Trailing newline
       t.equal(lines.length, 25, 'pipes entire bundle including prelude, sources and source map url')
       t.equal(lines.pop(), '//# sourceMappingURL=http://my.awseome.site/bundle.js.map', 'last line as source map url pointing to .js.map file at url set to supplied url')
 
-      var map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
+      const map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
       t.equal(map.file, 'generated.js', 'leaves file name unchanged')
       t.equal(map.sources.length, 4, 'maps 4 source files')
       t.equal(map.sourcesContent.length, 4, 'includes 4 source contents')
@@ -104,20 +103,20 @@ test('\nwhen piping a bundle generated with browserify through exorcist and adju
 
 test('\nwhen piping a bundle generated with browserify through exorcist and adjusting root, url, and base', function (t) {
   t.on('end', cleanup);
-  var data = ''
-  fs.createReadStream(fixtures + '/bundle.js')
+  let data = '';
+  fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(exorcist(scriptMapfile, 'http://my.awseome.site/bundle.js.map', 'http://my.awesome.site/src', base))
     .pipe(through(onread, onflush));
 
     function onread(d, _, cb) { data += d; cb(); }
 
     function onflush(cb) {
-      var lines = data.split('\n')
+      const lines = data.split('\n');
       lines.pop(); // Trailing newline
       t.equal(lines.length, 25, 'pipes entire bundle including prelude, sources and source map url')
       t.equal(lines.pop(), '//# sourceMappingURL=http://my.awseome.site/bundle.js.map', 'last line as source map url pointing to .js.map file at url set to supplied url')
 
-      var map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
+      const map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
       t.equal(map.file, 'generated.js', 'leaves file name unchanged')
       t.equal(map.sources.length, 4, 'maps 4 source files')
       t.equal(map.sources[0].indexOf(base), -1, 'uses relative source paths')
@@ -132,29 +131,33 @@ test('\nwhen piping a bundle generated with browserify through exorcist and adju
 
 test('\nwhen piping a bundle generated with browserify to a map file in a directory that does not exist', function (t) {
   t.on('end', cleanup);
-  var badPathScriptMapfile = fixtures + '/noexists/bundle.js.map';
-  fs.createReadStream(fixtures + '/bundle.js')
+  const badPathScriptMapfile = `${fixtures}/noexists/bundle.js.map`;
+  fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(exorcist(badPathScriptMapfile))
+    .pipe(through(onread, onflush))
     .on('error', t.end)
-    .on('end', function () {
-      var map = JSON.parse(fs.readFileSync(badPathScriptMapfile, 'utf8'));
-      t.ok(map);
-      fs.unlinkSync(badPathScriptMapfile);
-      t.end();
-    })
+
+  function onread(d, _, cb) { cb(); }
+
+  function onflush() {
+    const map = JSON.parse(fs.readFileSync(badPathScriptMapfile, 'utf8'));
+    t.ok(map);
+    fs.unlinkSync(badPathScriptMapfile);
+    t.end();
+  }
 })
 
 test('\nwhen piping a bundle generated with browserify and the write fails', function (t) {
   t.on('end', cleanup);
-  var expectedErr = new Error('File write failed')
-  var ex = proxyquire('../', {
+  const expectedErr = new Error('File write failed');
+  const ex = proxyquire('../', {
     fs: {
-      writeFile: function (file, content, enc, callback) {
+      writeFile(file, content, enc, callback) {
         callback(expectedErr)
       }
     }
-  })
-  fs.createReadStream(fixtures + '/bundle.js')
+  });
+  fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(ex(scriptMapfile))
     .on('error', function (err) {
       t.equal(err, expectedErr)
@@ -164,8 +167,7 @@ test('\nwhen piping a bundle generated with browserify and the write fails', fun
 
 test('\nwhen piping a bundle generated with browserify thats missing a map through exorcist and errorOnMissing is truthy' , function (t) {
   t.on('end', cleanup);
-  var data = ''
-  fs.createReadStream(fixtures + '/bundle.nomap.js')
+  fs.createReadStream(`${fixtures}/bundle.nomap.js`)
     .pipe(exorcist(scriptMapfile, undefined, undefined, undefined, true))
     .on('error', onerror);
 
@@ -177,9 +179,9 @@ test('\nwhen piping a bundle generated with browserify thats missing a map throu
 
 test('\nwhen piping a bundle generated with browserify thats missing a map through exorcist and errorOnMissing is falsey' , function (t) {
   t.on('end', cleanup);
-  var data = ''
-  var missingMapEmitted = false;
-  fs.createReadStream(fixtures + '/bundle.nomap.js')
+  let data = '';
+  let missingMapEmitted = false;
+  fs.createReadStream(`${fixtures}/bundle.nomap.js`)
     .pipe(exorcist(scriptMapfile))
     .on('missing-map', function () { missingMapEmitted = true })
     .pipe(through(onread, onflush));
@@ -187,7 +189,7 @@ test('\nwhen piping a bundle generated with browserify thats missing a map throu
     function onread(d, _, cb) { data += d; cb(); }
 
     function onflush(cb) {
-      var lines = data.split('\n')
+      const lines = data.split('\n');
       t.equal(lines.length, 25, 'pipes entire bundle including prelude')
       t.ok(missingMapEmitted, 'emits missing-map event')
 
@@ -198,19 +200,19 @@ test('\nwhen piping a bundle generated with browserify thats missing a map throu
 
 test('\nwhen performing a stylish exorcism', function (t) {
   t.on('end', cleanup);
-  var data = ''
-  fs.createReadStream(fixtures + '/to.css')
+  let data = '';
+  fs.createReadStream(`${fixtures}/to.css`)
     .pipe(exorcist(styleMapfile))
     .pipe(through(onread, onflush));
 
   function onread(d, _, cb) { data += d; cb(); }
 
   function onflush(cb) {
-    var lines = data.split('\n')
+    const lines = data.split('\n');
     t.equal(lines.length, 22, 'pipes entire style including prelude, sources and source map url')
     t.equal(lines.pop(), '/*# sourceMappingURL=to.css.map */', 'last line as source map url pointing to .css.map file')
 
-    var map = JSON.parse(fs.readFileSync(styleMapfile, 'utf8'));
+    const map = JSON.parse(fs.readFileSync(styleMapfile, 'utf8'));
     t.equal(map.file, 'to.css', 'leaves file name unchanged')
     t.equal(map.sources.length, 2, 'maps 4 source files')
     t.equal(map.sourcesContent.length, 2, 'includes 4 source contents')
@@ -225,14 +227,14 @@ test('\nwhen performing a stylish exorcism', function (t) {
 test('\nwhen piping a bundle generated with browserify with preexisting source root', function(t) {
   t.on('end', cleanup);
 
-  fs.createReadStream(fixtures + '/bundle.withroot.js')
+  fs.createReadStream(`${fixtures}/bundle.withroot.js`)
     .pipe(exorcist(scriptMapfile))
     .pipe(through(onread, onflush));
 
     function onread(_, __, cb) { cb(); }
 
     function onflush(cb) {
-      var map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
+      const map = JSON.parse(fs.readFileSync(scriptMapfile, 'utf8'));
       t.equal(map.sourceRoot, base, 'leaves source root value in place')
 
       cb();
@@ -242,17 +244,17 @@ test('\nwhen piping a bundle generated with browserify with preexisting source r
 
 test('\nwhen piping a bundle generated with browserify through exorcist without adjusting properties and sending source map to stream', function (t) {
   t.on('end', cleanup);
-  var data = ''
-  var map = ''
+  let data = '';
+  let map = '';
 
-  fs.createReadStream(fixtures + '/bundle.js')
+  fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(exorcist(through(onreadMap, onflushMap), 'bundle.js.map'))
     .pipe(through(onread, onflush));
 
   function onread(d, _, cb) { data += d; cb(); }
 
   function onflush(cb) {
-    var lines = data.split('\n')
+    const lines = data.split('\n');
     lines.pop(); // Trailing newline
     t.equal(lines.length, 25, 'pipes entire bundle including prelude, sources and source map url')
     t.equal(lines.pop(), '//# sourceMappingURL=bundle.js.map', 'last line as source map url pointing to .js.map file')
@@ -280,7 +282,7 @@ test('\nwhen piping a bundle generated with browserify through exorcist without 
 test('\nwhen piping a browserify bundle thru exorcist sending source map to a stream with missing required url', function (t) {
   t.on('end', cleanup);
 
-  var exorcistStream =
+  const exorcistStream =
     exorcist(through(onread)) // this is missing the URL as second argument
       .on('error', function (err) {
         t.ok(/map file URL is required/.test(err.message));
@@ -290,7 +292,7 @@ test('\nwhen piping a browserify bundle thru exorcist sending source map to a st
         t.fail('should have emitted an error about missing url');
       });
 
-  fs.createReadStream(fixtures + '/bundle.js').pipe(exorcistStream);
+  fs.createReadStream(`${fixtures}/bundle.js`).pipe(exorcistStream);
 
   function onread(d, _, cb) { cb(); }
 })
