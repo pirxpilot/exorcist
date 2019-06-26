@@ -18,14 +18,13 @@
     "convert-source-map": "~1",
     "is-stream": "~2",
     "minimist": "~1",
-    "through": "~2"
+    "through2": "~3"
   },
   "devDependencies": {
     "browserify": "~16",
     "jshint": "~2",
     "proxyquire": "~2",
-    "tap": "~14",
-    "through2": "~3"
+    "tap": "~14"
   },
   "keywords": [
     "source-map",

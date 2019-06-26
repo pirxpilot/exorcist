@@ -134,13 +134,17 @@ test('\nwhen piping a bundle generated with browserify to a map file in a direct
   const badPathScriptMapfile = `${fixtures}/noexists/bundle.js.map`;
   fs.createReadStream(`${fixtures}/bundle.js`)
     .pipe(exorcist(badPathScriptMapfile))
+    .pipe(through(onread, onflush))
     .on('error', t.end)
-    .on('end', function () {
-      const map = JSON.parse(fs.readFileSync(badPathScriptMapfile, 'utf8'));
-      t.ok(map);
-      fs.unlinkSync(badPathScriptMapfile);
-      t.end();
-    })
+
+  function onread(d, _, cb) { cb(); }
+
+  function onflush() {
+    const map = JSON.parse(fs.readFileSync(badPathScriptMapfile, 'utf8'));
+    t.ok(map);
+    fs.unlinkSync(badPathScriptMapfile);
+    t.end();
+  }
 })
 
 test('\nwhen piping a bundle generated with browserify and the write fails', function (t) {
