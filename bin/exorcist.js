@@ -47,4 +47,4 @@ process.stdin
   .on('missing-map', console.error.bind(console))
   .pipe(process.stdout);
 
-})()
+})();

@@ -2,7 +2,6 @@
 
 var mold = require('mold-source-map')
   , path = require('path')
-  , fs = require('fs')
   , mkdirp = require('mkdirp')
   , isStream = require('is-stream')
   , fs = require('fs');
@@ -26,10 +25,10 @@ function separate(src, url, root, base) {
     comment = '//# sourceMappingURL=' + url;
   }
 
-  return { json: json, comment: comment }
+  return { json: json, comment: comment };
 }
 
-var go = module.exports =
+module.exports =
 
 /**
  *
@@ -75,7 +74,7 @@ function exorcist(input, url, root, base, errorOnMissing) {
       return stream.emit('error', new Error('map file URL is required when using stream output'));
     }
 
-    url = url || path.basename(input)
+    url = url || path.basename(input);
     var separated = separate(src, url, root, base);
 
     if (isStream(input)) {
@@ -94,4 +93,4 @@ function exorcist(input, url, root, base, errorOnMissing) {
   });
 
   return stream;
-}
+};

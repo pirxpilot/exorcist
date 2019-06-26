@@ -164,7 +164,6 @@ test('\nwhen piping a bundle generated with browserify and the write fails', fun
 
 test('\nwhen piping a bundle generated with browserify thats missing a map through exorcist and errorOnMissing is truthy' , function (t) {
   t.on('end', cleanup);
-  var data = ''
   fs.createReadStream(fixtures + '/bundle.nomap.js')
     .pipe(exorcist(scriptMapfile, undefined, undefined, undefined, true))
     .on('error', onerror);
