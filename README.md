@@ -1,4 +1,7 @@
-# exorcist [![build status](https://secure.travis-ci.org/thlorenz/exorcist.svg?branch=master)](http://travis-ci.org/thlorenz/exorcist)
+This is a fork of [exorcist] package.
+It updates dependencies and fixes [splitting surrogate pairs][split-bug] bug.
+
+# exorcist
 
 <a href="https://www.patreon.com/bePatron?u=8663953"><img alt="become a patron" src="https://c5.patreon.com/external/logo/become_a_patron_button.png" height="35px"></a>
 
@@ -212,3 +215,6 @@ Type
 ## License
 
 MIT
+
+[split-bug]: https://github.com/thlorenz/mold-source-map/pull/9
+[exorcist]: https://www.npmjs.com/package/exorcist
